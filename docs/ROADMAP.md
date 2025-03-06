@@ -12,7 +12,7 @@ This roadmap outlines the planned development trajectory for Game Bot Builder, i
   - Implement real-time workflow visualization updates when actions are modified
   - Eliminate the need for manual refresh after action changes
 
-- [ ] **Auto-reorder actions in left panel when moved up or down**
+- [x] **Auto-reorder actions in left panel when moved up or down**
   - Update the actions list view automatically when reordering actions
   - Maintain visual consistency between the list and the workflow graph
 

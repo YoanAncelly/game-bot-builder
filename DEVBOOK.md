@@ -6,6 +6,16 @@ Game Bot Builder is a visual tool for creating game automation bots without codi
 
 ## Recent Implementations
 
+### Auto-reorder Actions in Left Panel Feature (2025-03-07)
+
+Implemented automatic reordering of actions in the left panel when actions are moved up or down:
+
+- Modified the `_refresh_actions_list` method in the `ActionsPanel` class to display actions in the correct execution order
+- Used the existing `_get_ordered_actions` method to retrieve actions in their workflow execution order
+- This ensures that the actions list in the left panel always reflects the actual workflow order after reordering actions
+
+This implementation provides better visual consistency between the actions list and the workflow graph, making it easier for users to understand the execution flow of their automation workflows.
+
 ### Auto-refresh Workflow Feature (2025-03-07)
 
 Implemented real-time workflow visualization updates when actions are modified:

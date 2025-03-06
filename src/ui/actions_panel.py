@@ -425,7 +425,11 @@ class ActionsPanel(QWidget):
             
         workflow = self.project.workflows[0]  # Use first workflow for now
         
-        for action in workflow.actions.values():
+        # Get ordered list of actions based on workflow connections
+        ordered_actions = self._get_ordered_actions(workflow)
+        
+        # Add actions to the list in execution order
+        for action in ordered_actions:
             item = QListWidgetItem(f"{action.name} ({action.type.value})")
             item.setData(Qt.UserRole, action.id)
             self.actions_list.addItem(item)
