@@ -193,9 +193,26 @@ class ActionConfigWidget(QWidget):
             project: The current Project instance
         """
         if self.action_type == ActionType.FIND_IMAGE:
+            # Store the currently selected image_id if any
+            current_image_id = self.image_combo.currentData()
+            
+            # Clear the combo box
             self.image_combo.clear()
+            
+            # Check if project has images
+            if not project or not hasattr(project, 'images') or not project.images:
+                return
+                
+            # Add all images to the combo box
             for image_id, image_data in project.images.items():
-                self.image_combo.addItem(image_data["description"], image_id)
+                if image_data and isinstance(image_data, dict) and "description" in image_data:
+                    self.image_combo.addItem(image_data["description"], image_id)
+            
+            # Restore the previously selected image if it still exists
+            if current_image_id:
+                index = self.image_combo.findData(current_image_id)
+                if index >= 0:
+                    self.image_combo.setCurrentIndex(index)
 
 
 class ActionsPanel(QWidget):
@@ -280,12 +297,12 @@ class ActionsPanel(QWidget):
         
         # Connect project signals
         self.project.project_loaded.connect(self._on_project_loaded)
-        self.project.project_modified.connect(self._refresh_actions_list)
+        self.project.project_modified.connect(self._on_project_modified)
         
         # Initial refresh
         self._refresh_actions_list()
         self._update_image_lists()
-        
+
     def set_project(self, project: Project):
         """Set the current project.
         
@@ -294,12 +311,12 @@ class ActionsPanel(QWidget):
         """
         if self.project:
             self.project.project_loaded.disconnect(self._on_project_loaded)
-            self.project.project_modified.disconnect(self._refresh_actions_list)
+            self.project.project_modified.disconnect(self._on_project_modified)
             
         self.project = project
         
         self.project.project_loaded.connect(self._on_project_loaded)
-        self.project.project_modified.connect(self._refresh_actions_list)
+        self.project.project_modified.connect(self._on_project_modified)
         
         self._refresh_actions_list()
         self._update_image_lists()
@@ -491,6 +508,10 @@ class ActionsPanel(QWidget):
         self._update_image_lists()
 
     @Slot()
+    def _on_project_modified(self):
+        """Handle project modified event."""
+        self._update_image_lists()
+        
     def move_action_up(self):
         """Move the selected action up in the workflow order."""
         current_item = self.actions_list.currentItem()
@@ -543,7 +564,6 @@ class ActionsPanel(QWidget):
                 self.actions_list.setCurrentItem(item)
                 break
     
-    @Slot()
     def move_action_down(self):
         """Move the selected action down in the workflow order."""
         current_item = self.actions_list.currentItem()

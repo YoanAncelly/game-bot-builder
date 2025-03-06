@@ -31,17 +31,25 @@ This roadmap outlines the planned development trajectory for Game Bot Builder, i
 - [ ] Fix image recognition accuracy issues
 - [ ] Address memory leaks during long-running workflows
 - [ ] Improve error handling for failed actions
+- [ ] **Fix project load signal disconnect error**
+  - Address error: Failed to disconnect signal project_loaded(QString)
+  - Ensure proper signal handling during project loading/unloading
+- [x] **Fix empty Target Image list in find_image action panel**
+  - Ensure captured images appear in Target Image dropdown
+  - Verify image storage and retrieval mechanism
 
 ## Short-Term Goals (v0.3 - v0.5)
 
 ### Core Functionality
 
 - [ ] **Enhanced Image Recognition**
+
   - Implement more robust template matching algorithms
   - Add support for partial matching and fuzzy recognition
   - Introduce confidence thresholds for matches
 
 - [ ] **Advanced Action Types**
+
   - Add OCR (Optical Character Recognition) action
   - Implement color detection and pixel sampling
   - Add support for keyboard shortcuts and combinations
@@ -56,12 +64,14 @@ This roadmap outlines the planned development trajectory for Game Bot Builder, i
 ### User Experience
 
 - [ ] **Improved Workflow Editor**
+
   - Zoom and pan capabilities
   - Grid snapping for better alignment
   - Minimap for navigating complex workflows
   - Collapsible groups of actions
 
 - [ ] **Project Management**
+
   - Project templates for common game bot scenarios
   - Import/export of workflow components
   - Version history and change tracking
@@ -76,11 +86,13 @@ This roadmap outlines the planned development trajectory for Game Bot Builder, i
 ### Advanced Features
 
 - [ ] **Machine Learning Integration**
+
   - Train custom object detection models for games
   - Implement behavior learning from user demonstrations
   - Add anomaly detection for identifying unusual game states
 
 - [ ] **Scheduling and Automation**
+
   - Time-based workflow execution
   - Condition-based triggers (e.g., run when a specific image appears)
   - Integration with system events
@@ -93,6 +105,7 @@ This roadmap outlines the planned development trajectory for Game Bot Builder, i
 ### Performance and Reliability
 
 - [ ] **Optimization**
+
   - Reduce CPU usage during image recognition
   - Improve memory management for long-running bots
   - Multi-threading for parallel action execution
@@ -107,11 +120,13 @@ This roadmap outlines the planned development trajectory for Game Bot Builder, i
 ### Ecosystem Expansion
 
 - [ ] **Plugin System**
+
   - API for third-party extensions
   - Community plugin marketplace
   - Game-specific plugin packages
 
 - [ ] **Cloud Integration**
+
   - Cloud storage for projects and assets
   - Sharing and collaboration features
   - Usage analytics and insights
@@ -124,6 +139,7 @@ This roadmap outlines the planned development trajectory for Game Bot Builder, i
 ### Advanced Intelligence
 
 - [ ] **Advanced AI Capabilities**
+
   - Natural language processing for game text
   - Decision-making based on game state analysis
   - Self-optimizing workflows that improve over time
@@ -136,6 +152,7 @@ This roadmap outlines the planned development trajectory for Game Bot Builder, i
 ### Community and Collaboration
 
 - [ ] **Workflow Marketplace**
+
   - Platform for sharing and selling workflows
   - Rating and review system
   - Version control and updates
