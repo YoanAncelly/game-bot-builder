@@ -201,6 +201,8 @@ class ActionConfigWidget(QWidget):
 class ActionsPanel(QWidget):
     """Panel for creating and managing bot actions."""
     
+    actions_updated = Signal()
+    
     def __init__(self, project: Project):
         super().__init__()
         self.project = project
@@ -342,6 +344,9 @@ class ActionsPanel(QWidget):
                 last_action.next_action_id = action.id
             self._refresh_actions_list()
             self.project.mark_modified()
+            
+            # Signal that actions have been updated
+            self.actions_updated.emit()
 
     @Slot()
     def update_action(self):
@@ -379,6 +384,9 @@ class ActionsPanel(QWidget):
         self._refresh_actions_list()
         self.project.mark_modified()
         
+        # Signal that actions have been updated
+        self.actions_updated.emit()
+        
     @Slot()
     def remove_action(self):
         """Remove the selected action."""
@@ -404,6 +412,9 @@ class ActionsPanel(QWidget):
                 if workflow.remove_action(action_id):
                     self._refresh_actions_list()
                     self.project.mark_modified()
+                    
+                    # Signal that actions have been updated
+                    self.actions_updated.emit()
                     
     def _refresh_actions_list(self):
         """Refresh the list of actions."""
@@ -518,6 +529,9 @@ class ActionsPanel(QWidget):
         self._refresh_actions_list()
         self.project.mark_modified()
 
+        # Signal that actions have been updated
+        self.actions_updated.emit()
+
         # Reselect the moved action
         for i in range(self.actions_list.count()):
             item = self.actions_list.item(i)
@@ -567,6 +581,9 @@ class ActionsPanel(QWidget):
         # Refresh the UI
         self._refresh_actions_list()
         self.project.mark_modified()
+        
+        # Signal that actions have been updated
+        self.actions_updated.emit()
         
         # Reselect the moved action
         for i in range(self.actions_list.count()):

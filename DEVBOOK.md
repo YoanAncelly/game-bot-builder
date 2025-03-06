@@ -4,6 +4,24 @@
 
 Game Bot Builder is a visual tool for creating game automation bots without coding. It allows users to design automation workflows by capturing screen elements and defining actions to be performed on those elements. The application is built using Python with PySide6 (Qt) for the user interface.
 
+## Recent Implementations
+
+### Auto-refresh Workflow Feature (2025-03-07)
+
+Implemented real-time workflow visualization updates when actions are modified:
+
+- Added an `actions_updated` signal to the `ActionsPanel` class that gets emitted whenever actions are modified, including:
+  - When a new action is added
+  - When an existing action is updated
+  - When an action is removed
+  - When actions are reordered (moved up or down)
+
+- Updated the `WorkflowEditor` class to connect to this signal and automatically refresh the workflow visualization
+
+- Connected the `actions_updated` signal from the `ActionsPanel` to the `WorkflowEditor`'s `refresh_scene` method in the `MainWindow._connect_signals` method to ensure proper signal propagation
+
+This implementation eliminates the need for manual refresh after action changes, providing a more seamless user experience while maintaining the "Refresh Workflow" button as a fallback option.
+
 ## Architecture
 
 The project follows a modular architecture with clear separation between the core functionality and the user interface:

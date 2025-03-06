@@ -154,8 +154,25 @@ class WorkflowEditor(QWidget):
         return colors.get(action_type.value, QColor(240, 240, 240))
 
     def set_project(self, project):
+        """Set the current project and connect to actions_updated signal."""
+        # Disconnect from previous project's signals if any
+        if hasattr(self, 'project') and self.project:
+            # Find the actions panel in the main window
+            main_window = self.window()
+            if hasattr(main_window, 'actions_panel'):
+                try:
+                    main_window.actions_panel.actions_updated.disconnect(self.refresh_scene)
+                except:
+                    # Signal might not be connected yet
+                    pass
+        
         self.project = project
         self.refresh_scene()
+        
+        # Connect to the actions_updated signal from the actions panel
+        main_window = self.window()
+        if hasattr(main_window, 'actions_panel'):
+            main_window.actions_panel.actions_updated.connect(self.refresh_scene)
 
     def _refresh(self):
         # Refresh method simply calls refresh_scene

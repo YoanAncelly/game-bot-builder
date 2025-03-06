@@ -187,6 +187,9 @@ class MainWindow(QMainWindow):
         """Connect signals and slots."""
         # Connect signals from panels and editors
         self.workflow_editor.status_message.connect(self.update_status)
+        
+        # Connect actions_updated signal from actions_panel to workflow_editor refresh
+        self.actions_panel.actions_updated.connect(self.workflow_editor.refresh_scene)
     
     @Slot()
     def new_project(self):

@@ -8,7 +8,7 @@ This roadmap outlines the planned development trajectory for Game Bot Builder, i
 
 ### UI Enhancements
 
-- [ ] **Auto-refresh workflow on actions update**
+- [x] **Auto-refresh workflow on actions update**
   - Implement real-time workflow visualization updates when actions are modified
   - Eliminate the need for manual refresh after action changes
 
