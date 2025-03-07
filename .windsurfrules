@@ -1,3 +1,6 @@
 1. Always read DEVBOOK.md and ROADMAP.md before making changes to the code
 2. Always update DEVBOOK.md when making changes to the code
 3. Always update ROADMAP.md when making changes to the code
+4. Always update USER_GUIDE.md when making changes to the code if relevant
+5. Always update README.md when making changes to the code if relevant
+6. Always update CHANGELOG.md when making changes to the code
