@@ -2,4 +2,4 @@ captures
 logs
 *.gbb
 **_pycache_**
-.venv
+**venv**
