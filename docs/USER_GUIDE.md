@@ -139,6 +139,33 @@ The main window is divided into two primary areas:
 - **Target Analysis:** Analyze your target image to extract important features.
   - **Analyze Target:** Click this button to automatically extract color and shape information from the selected image.
   - **Analysis Results:** Shows the detected color and shape characteristics of the target image in a rich text display.
+
+#### Understanding the Analyze Target Feature
+
+The "Analyze Target" button is a powerful tool that helps you optimize image recognition accuracy by providing insights about your target image:
+
+1. **What it does:**
+   - Extracts dominant color information (RGB values)
+   - Identifies shape characteristics (circle, rectangle, triangle, etc.)
+   - Measures shape properties like circularity (how "circular" the shape is)
+
+2. **How to use it effectively:**
+   - Select your target image from the list
+   - Click "Analyze Target" to see its properties
+   - Review the analysis results
+   - Adjust recognition settings based on these insights (or let automatic settings work)
+
+3. **Benefits and practical applications:**
+   - **Automatic Color Filtering Setup:** When "Auto-detect Color Range" is checked, clicking "Analyze Target" automatically configures optimal color filtering ranges
+   - **Recognition Strategy Selection:** Understanding if your target has distinctive color, shape, or both helps you choose the most effective recognition methods
+   - **Troubleshooting Failed Recognition:** Analysis helps diagnose why recognition might be failing
+   - **Performance Optimization:** Choose more efficient recognition strategies based on target properties
+
+4. **Common workflows:**
+   - For color-distinct targets: Enable color filtering with auto-detect, then analyze target
+   - For shape-distinct targets: Enable shape matching and adjust shape threshold based on analysis
+   - For targets with both: Use both features together for maximum accuracy
+
 - **Basic Settings:** Adjust the most common recognition parameters.
   - **Match Threshold:** Control how strict the matching algorithm should be (higher values require more precise matches).
   - **Match Mode:** Select the algorithm used for template matching.

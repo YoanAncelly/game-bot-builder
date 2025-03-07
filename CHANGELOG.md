@@ -22,6 +22,7 @@ Redesigned the Image Recognition Panel UI to reduce clutter and improve usabilit
 - Made controls more compact and aligned consistently
 - Improved visual hierarchy with better grouping of related controls
 - Added visual feedback with alternating row colors in results list
+- Enhanced user documentation with detailed explanation of the Analyze Target feature and its benefits
 
 These UI improvements make the image recognition panel significantly more intuitive and less cluttered, especially when using the advanced recognition features.
 
