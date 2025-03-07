@@ -140,7 +140,7 @@ Projects are saved in a custom `.gbb` file format, which is essentially a JSON f
 
 ## Dependencies
 
-The project relies on the following key libraries:
+The project requires Python 3.11 and relies on the following key libraries:
 
 - **PySide6**: Qt bindings for Python, used for the UI
 - **OpenCV (cv2)**: Computer vision library for image recognition

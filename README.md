@@ -13,9 +13,19 @@ A visual tool for creating game bots without coding. Design automation workflows
 
 ## Installation
 
-1. Clone this repository.
+1. **Python Requirement**: This project requires Python 3.11. You can download it from the [official Python website](https://www.python.org/downloads/release/python-3110/).
 
-2. Create a virtual environment:
+   **If you have multiple Python versions installed:**
+   
+   If you have Python 3.12 or another version already installed, you can use one of these approaches:
+   
+   - **Python Launcher (recommended):** Use `py -3.11` instead of `python` in all commands
+   - **Full path:** Use the complete path to Python 3.11 (e.g., `C:\Python311\python.exe`)
+   - **Temporary PATH adjustment:** Run `set PATH=C:\Python311;%PATH%` before other commands
+
+2. Clone this repository.
+
+3. Create a virtual environment:
    - Open a terminal (Command Prompt or PowerShell) and navigate to the project directory.
    - Run: `python -m venv venv`
    - Activate the virtual environment:
@@ -24,9 +34,11 @@ A visual tool for creating game bots without coding. Design automation workflows
      - If you encounter execution policy issues in PowerShell, run:
        `Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned`
 
-3. Install dependencies with: `python -m pip install --upgrade pip setuptools wheel`
+4. Install dependencies:
+   - Run: `python -m pip install --upgrade pip setuptools wheel`
+   - Then: `pip install -r requirements.txt`
 
-4. Run the application with: `python main.py`
+5. Run the application with: `python main.py`
 
 ## Usage
 

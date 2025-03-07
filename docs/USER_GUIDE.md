@@ -27,16 +27,43 @@ The Game Bot Builder is a visual tool designed to allow you to create, test, and
 
 ## Installation
 
+**Important: Game Bot Builder requires Python 3.11.** Other versions may cause compatibility issues with the dependencies.
+
 Follow these steps to install and set up the project on Windows using a virtual environment:
 
-1. **Clone the Repository**
+1. **Install Python 3.11**
+
+   Download and install Python 3.11 from the [official Python website](https://www.python.org/downloads/release/python-3110/).
+   
+   During installation, ensure you check the option to "Add Python to PATH".
+   
+   **Note for users with multiple Python versions:**
+   
+   If you have Python 3.12 or another version already installed (check with `python --version`), you have several options:
+   
+   a) **Use Python Launcher (recommended):**
+      - After installing Python 3.11, use the Python Launcher to specify version 3.11:
+      - Create the virtual environment with: `py -3.11 -m venv venv`
+      - For all other commands, replace `python` with `py -3.11`
+   
+   b) **Use the full path to Python 3.11:**
+      - Find the installation path (typically `C:\Python311\python.exe`)
+      - Use the full path for commands: `C:\Python311\python.exe -m venv venv`
+   
+   c) **Modify PATH temporarily:**
+      - Open a new command prompt
+      - Set PATH to prioritize Python 3.11: `set PATH=C:\Python311;%PATH%`
+      - Verify with `python --version` that you're using 3.11
+      - Then proceed with the normal installation steps
+
+2. **Clone the Repository**
 
    ```bash
    git clone <repository_url>
    cd game-bot-builder
    ```
 
-2. **Create and Activate a Virtual Environment**
+3. **Create and Activate a Virtual Environment**
 
    - Open a terminal (Command Prompt or PowerShell) in the project directory.
    - Create the virtual environment:
@@ -57,7 +84,7 @@ Follow these steps to install and set up the project on Windows using a virtual 
        Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
        ```
 
-3. **Upgrade Package Tools and Install Dependencies**
+4. **Upgrade Package Tools and Install Dependencies**
    Upgrade pip, setuptools, and wheel before installing dependencies:
 
    ```bash
@@ -70,7 +97,7 @@ Follow these steps to install and set up the project on Windows using a virtual 
    python -m pip install -r requirements.txt
    ```
 
-4. **Run the Application**
+5. **Run the Application**
    Launch the bot builder by running:
    ```bash
    python main.py

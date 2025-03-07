@@ -168,6 +168,7 @@ This roadmap outlines the planned development trajectory for Game Bot Builder, i
 - [ ] Code refactoring for maintainability
 - [ ] Documentation improvements
 - [ ] Dependency management and updates
+- [x] Specify Python 3.11 requirement in documentation
 
 ## Release Schedule
 
