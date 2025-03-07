@@ -136,17 +136,60 @@ The main window is divided into two primary areas:
 ### Image Recognition Panel
 
 - **Image Selection:** Choose from your list of captured images for recognition tests.
-- **Settings:** Adjust the match threshold and other parameters.
+- **Target Analysis:** Analyze your target image to extract important features.
+  - **Analyze Target:** Click this button to automatically extract color and shape information from the selected image.
+  - **Analysis Results:** Shows the detected color and shape characteristics of the target image in a rich text display.
+- **Basic Settings:** Adjust the most common recognition parameters.
   - **Match Threshold:** Control how strict the matching algorithm should be (higher values require more precise matches).
   - **Match Mode:** Select the algorithm used for template matching.
+  - **Convert to Grayscale:** Process images in grayscale for faster matching.
+  - **Highlight Matches:** Visually highlight matches in the result window.
+- **Advanced Settings:** Collapsible sections for more specialized recognition features.
+  - **Color Filtering:** Enable this feature to pre-filter the screenshot by color before template matching.
+    - **Auto-detect Color Range:** Automatically determine the color range based on the target image.
+    - **Custom Color Range:** Manually set RGB values for the lower and upper bounds of the color filter.
+  - **Shape Matching:** Enable this feature to verify matches by comparing their shape to the target image.
+    - **Shape Threshold:** Control how strictly shapes should match (higher values require more similar shapes).
   - **Multi-Scale Matching:** Enable this feature to detect images at different scales.
     - **Min Scale/Max Scale:** Define the range of scaling to search for (e.g., 0.8-1.2 means the template might be 80%-120% of its original size).
     - **Scale Steps:** Number of scale increments to check between min and max scales (more steps means finer granularity but slower performance).
-  - **Convert to Grayscale:** Match based on intensity rather than color (often more reliable).
-  - **Highlight Matches:** Visually indicates detected matches by tracing the mouse around them.
 - **Testing:** Use "Test Recognition" to take a new screenshot and see if the selected image appears on the screen.
+- **Results:** Displays a list of matches found during testing, including their positions and confidence scores.
 
-#### Multi-Scale Matching
+#### Advanced Image Recognition Features
+
+The enhanced image recognition system combines multiple techniques to dramatically improve detection accuracy:
+
+##### Target Analysis
+Before using any image for detection, you can analyze it to understand its properties:
+1. Select your target image in the list
+2. Click "Analyze Target"
+3. Review the color and shape information
+4. This analysis helps automatically configure optimal settings for detection
+
+##### Color Filtering
+This feature filters the screenshot to focus only on regions with colors similar to your target:
+
+- **When to use:** Enable color filtering when:
+  - Your target has a distinctive color (like orange circles in aim trainers)
+  - Background elements cause false positives
+  - You need to distinguish between similar shapes with different colors
+  
+- **Auto vs. Manual:** 
+  - Auto-detect works well for most targets with uniform colors
+  - Use manual RGB range setting for more precise control or for targets with multiple colors
+
+##### Shape Matching
+After finding potential matches by template matching, this feature verifies them by shape:
+
+- **When to use:** Enable shape matching when:
+  - False positives have similar colors but different shapes (e.g., mistaking circles for squares)
+  - You need to focus on the exact shape regardless of internal details
+  - Template matching alone yields too many incorrect matches
+  
+- **How it works:** The system extracts contours from both the target and potential matches, then compares their shapes. Only matches with similar shapes are kept.
+
+##### Multi-Scale Matching
 
 This advanced feature helps solve recognition problems when the target image appears at different sizes in the game:
 
@@ -156,6 +199,25 @@ This advanced feature helps solve recognition problems when the target image app
   - You're experiencing false negatives with standard matching
 - **How it works:** The system automatically checks multiple rescaled versions of your template image against the screen, finding the best match.
 - **Performance note:** Using multi-scale matching increases processing time, as the system must perform multiple template matching operations at different scales.
+
+#### Recommended Settings for Common Scenarios
+
+- **Fast-Paced Games (e.g., aim trainers):**
+  - Enable color filtering with auto-detection
+  - Enable shape matching with threshold around 0.7
+  - Set match threshold to 0.75-0.85
+  - Use multi-scale matching only if necessary
+
+- **UI Elements in Strategy Games:**
+  - Use higher match threshold (0.85-0.95)
+  - Shape matching often unnecessary
+  - Color filtering helpful for buttons and icons
+
+- **Hard-to-Detect Moving Targets:**
+  - Enable all three advanced features
+  - Use lower match threshold (0.6-0.7)
+  - Increase scale steps to 7-10
+  - Use wider scale range (e.g., 0.7-1.3)
 
 ### Actions Panel
 

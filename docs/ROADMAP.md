@@ -16,22 +16,28 @@ This roadmap outlines the planned development trajectory for Game Bot Builder, i
   - Update the actions list view automatically when reordering actions
   - Maintain visual consistency between the list and the workflow graph
 
-- [ ] **Make right workflow panel drag-and-drop capable**
+- [x] **Make right workflow panel drag-and-drop capable**
   - Implement drag-and-drop functionality for action nodes in the workflow editor
   - Allow users to visually rearrange workflow components
   - Add connection lines that can be created by dragging between nodes
 
-- [ ] **Change text in right panel to black for better readability**
+- [x] **Change text in right panel to black for better readability**
   - Update text color in the workflow editor from white to black
   - Ensure proper contrast with the background colors
   - Review and improve overall color scheme for better readability
 
+- [x] **Improve Image Recognition Panel UI**
+  - Organize UI into logical collapsible sections
+  - Fix text visibility and formatting in Target Analysis panel
+  - Make advanced features accessible but not cluttered
+  - Ensure consistent styling and proper text contrast
+
 ### Bug Fixes
 
-- [ ] Fix image recognition accuracy issues
+- [x] Fix image recognition accuracy issues
 - [ ] Address memory leaks during long-running workflows
 - [ ] Improve error handling for failed actions
-- [ ] **Fix project load signal disconnect error**
+- [x] **Fix project load signal disconnect error**
   - Address error: Failed to disconnect signal project_loaded(QString)
   - Ensure proper signal handling during project loading/unloading
 - [x] **Fix empty Target Image list in find_image action panel**
@@ -42,7 +48,7 @@ This roadmap outlines the planned development trajectory for Game Bot Builder, i
 
 ### Core Functionality
 
-- [ ] **Enhanced Image Recognition**
+- [x] **Enhanced Image Recognition**
 
   - Implement more robust template matching algorithms
   - Add support for partial matching and fuzzy recognition
@@ -162,13 +168,18 @@ This roadmap outlines the planned development trajectory for Game Bot Builder, i
   - Comments and annotations
   - Role-based access control
 
-## Technical Debt and Maintenance
+## Enhanced Image Recognition (v0.3)
 
-- [ ] Comprehensive test suite development
-- [ ] Code refactoring for maintainability
-- [ ] Documentation improvements
-- [ ] Dependency management and updates
-- [x] Specify Python 3.11 requirement in documentation
+- [x] Improve template matching with multi-scale support
+- [x] Add color filtering to reduce false positives
+- [x] Add shape matching for more accurate target detection
+- [x] Create target analysis feature to automatically extract color and shape features
+- [x] Update UI to expose new image recognition capabilities
+- [ ] Add edge detection and contour analysis for advanced shape matching
+- [ ] Implement feature matching for partially visible targets
+- [ ] Support rotation-invariant template matching
+- [ ] Add motion detection for moving targets
+- [ ] Create presets for common game targets
 
 ## Release Schedule
 
@@ -203,3 +214,11 @@ Items in this roadmap are prioritized based on:
 4. Strategic importance
 
 Priorities may shift based on user feedback and evolving requirements.
+
+## Technical Debt and Maintenance
+
+- [ ] Comprehensive test suite development
+- [ ] Code refactoring for maintainability
+- [ ] Documentation improvements
+- [ ] Dependency management and updates
+- [x] Specify Python 3.11 requirement in documentation

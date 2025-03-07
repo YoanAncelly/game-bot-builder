@@ -69,7 +69,11 @@ class Workspace(QObject):
     def find_template(self, template_path: str, screen_path: Optional[str] = None,
                      threshold: float = 0.8, use_multi_scale: bool = False,
                      scale_range: Tuple[float, float] = (0.8, 1.2),
-                     scale_steps: int = 5, max_matches: int = 10) -> List[QRect]:
+                     scale_steps: int = 5, max_matches: int = 10,
+                     use_color_filtering: bool = False,
+                     color_range: Optional[Tuple[Tuple[int, int, int], Tuple[int, int, int]]] = None,
+                     match_shape: bool = False,
+                     shape_threshold: float = 0.7) -> List[QRect]:
         """Find a template image within a screenshot.
         
         Args:
@@ -80,6 +84,10 @@ class Workspace(QObject):
             scale_range: Range of scales to try (min_scale, max_scale)
             scale_steps: Number of scale steps between min and max scale
             max_matches: Maximum number of matches to return
+            use_color_filtering: Whether to filter by color before matching
+            color_range: Optional tuple of (lower_bound, upper_bound) RGB values for color filtering
+            match_shape: Whether to use shape matching as additional verification
+            shape_threshold: Threshold for shape matching similarity (0-1)
             
         Returns:
             List of QRect objects representing matched regions
@@ -98,10 +106,57 @@ class Workspace(QObject):
             screenshot = cv2.imread(screen_path)
             if screenshot is None:
                 raise ValueError(f"Failed to load screenshot: {screen_path}")
+            
+            # Apply color filtering if requested
+            if use_color_filtering and color_range is not None:
+                # Convert to HSV color space (better for color filtering)
+                screenshot_hsv = cv2.cvtColor(screenshot, cv2.COLOR_BGR2HSV)
+                template_hsv = cv2.cvtColor(template, cv2.COLOR_BGR2HSV)
+                
+                # Compute average color of template
+                if color_range is None:
+                    template_avg_color = np.mean(template_hsv, axis=(0, 1))
+                    # Create a color range based on the average template color
+                    color_tolerance = (20, 50, 50)  # H, S, V tolerances
+                    lower_bound = np.array([max(0, template_avg_color[0] - color_tolerance[0]),
+                                           max(0, template_avg_color[1] - color_tolerance[1]),
+                                           max(0, template_avg_color[2] - color_tolerance[2])])
+                    upper_bound = np.array([min(179, template_avg_color[0] + color_tolerance[0]),
+                                           min(255, template_avg_color[1] + color_tolerance[1]),
+                                           min(255, template_avg_color[2] + color_tolerance[2])])
+                else:
+                    # Convert RGB color range to HSV
+                    lower_rgb, upper_rgb = color_range
+                    lower_bound = np.array(cv2.cvtColor(np.uint8([[lower_rgb]]), cv2.COLOR_RGB2HSV)[0, 0])
+                    upper_bound = np.array(cv2.cvtColor(np.uint8([[upper_rgb]]), cv2.COLOR_RGB2HSV)[0, 0])
+                
+                # Create mask based on color range
+                color_mask = cv2.inRange(screenshot_hsv, lower_bound, upper_bound)
+                
+                # Apply mask to screenshot
+                filtered_screenshot = cv2.bitwise_and(screenshot, screenshot, mask=color_mask)
+                
+                # For visualization and debugging
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                mask_path = os.path.join(self.capture_directory, f"color_mask_{timestamp}.png")
+                cv2.imwrite(mask_path, color_mask)
+                filtered_path = os.path.join(self.capture_directory, f"filtered_{timestamp}.png")
+                cv2.imwrite(filtered_path, filtered_screenshot)
+                
+                logger.info(f"Applied color filtering. Mask saved to: {mask_path}")
+                
+                # Use the filtered screenshot for further processing
+                screenshot_for_matching = filtered_screenshot
+            else:
+                screenshot_for_matching = screenshot.copy()
                 
             # Convert both images to grayscale
             template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
-            screenshot_gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
+            screenshot_gray = cv2.cvtColor(screenshot_for_matching, cv2.COLOR_BGR2GRAY)
+            
+            # Store original template for shape matching later
+            original_template = template.copy()
+            original_template_gray = template_gray.copy()
             
             matches = []
             
@@ -123,6 +178,45 @@ class Workspace(QObject):
                     rect = QRect(pt[0], pt[1], template_w, template_h)
                     matches.append(rect)
             
+            # Apply shape matching if requested
+            if match_shape and matches:
+                # Extract template contours for shape matching
+                template_contours = self._extract_contours(original_template_gray)
+                
+                if template_contours:
+                    main_template_contour = max(template_contours, key=cv2.contourArea)
+                    
+                    # Filter matches based on shape similarity
+                    filtered_matches = []
+                    for rect in matches:
+                        # Extract region from screenshot
+                        region = screenshot_gray[rect.y():rect.y()+rect.height(), rect.x():rect.x()+rect.width()]
+                        
+                        # Check if region has valid dimensions
+                        if region.shape[0] > 0 and region.shape[1] > 0:
+                            # Extract contours from region
+                            region_contours = self._extract_contours(region)
+                            
+                            if region_contours:
+                                main_region_contour = max(region_contours, key=cv2.contourArea)
+                                
+                                # Compare shapes
+                                shape_match = cv2.matchShapes(main_template_contour, main_region_contour, cv2.CONTOURS_MATCH_I2, 0.0)
+                                logger.debug(f"Shape match score: {shape_match} (lower is better)")
+                                
+                                # Convert shape_match to similarity (1.0 = perfect match, 0.0 = no match)
+                                # shape_match is 0 for perfect match, and increases for worse matches
+                                similarity = max(0.0, 1.0 - shape_match)
+                                
+                                if similarity >= shape_threshold:
+                                    filtered_matches.append(rect)
+                                    logger.debug(f"Match passed shape verification with similarity {similarity:.2f}")
+                                else:
+                                    logger.debug(f"Match failed shape verification with similarity {similarity:.2f}")
+                    
+                    matches = filtered_matches
+                    logger.info(f"After shape matching: {len(matches)} matches remain")
+            
             # Apply non-maximum suppression to eliminate overlapping matches
             matches = self._apply_non_max_suppression(matches)
             
@@ -142,63 +236,99 @@ class Workspace(QObject):
             logger.error(f"Template matching failed: {str(e)}")
             raise
     
-    def _apply_non_max_suppression(self, matches: List[QRect], overlap_threshold: float = 0.3) -> List[QRect]:
-        """Apply non-maximum suppression to filter out overlapping matches.
+    def _extract_contours(self, gray_image):
+        """Extract contours from a grayscale image.
         
         Args:
-            matches: List of QRect objects representing matches
-            overlap_threshold: Maximum allowed overlap ratio (0-1)
+            gray_image: Grayscale image
             
         Returns:
-            Filtered list of QRect objects
+            List of contours
         """
-        if not matches:
-            return []
-            
-        # Convert QRects to a format easier to work with
-        boxes = [(rect.x(), rect.y(), rect.x() + rect.width(), rect.y() + rect.height()) for rect in matches]
+        # Apply threshold to get a binary image
+        _, binary = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)
         
-        # Calculate areas for each box
-        areas = [(x2 - x1) * (y2 - y1) for x1, y1, x2, y2 in boxes]
-        
-        # Sort by bottom-right y-coordinate
-        indices = list(range(len(boxes)))
-        indices.sort(key=lambda i: boxes[i][3], reverse=True)
-        
-        keep = []
-        while indices:
-            i = indices[0]
-            keep.append(i)
-            
-            to_remove = [0]  # Always remove the current index
-            x1_i, y1_i, x2_i, y2_i = boxes[i]
-            area_i = areas[i]
-            
-            # Check each remaining box
-            for j_idx, j in enumerate(indices[1:], 1):
-                x1_j, y1_j, x2_j, y2_j = boxes[j]
-                
-                # Calculate intersection
-                xx1 = max(x1_i, x1_j)
-                yy1 = max(y1_i, y1_j)
-                xx2 = min(x2_i, x2_j)
-                yy2 = min(y2_i, y2_j)
-                
-                # Check if there is an intersection
-                if xx2 > xx1 and yy2 > yy1:
-                    intersection = (xx2 - xx1) * (yy2 - yy1)
-                    overlap = intersection / min(area_i, areas[j])
-                    
-                    if overlap > overlap_threshold:
-                        to_remove.append(j_idx)
-            
-            # Remove boxes marked for removal (in reverse order to maintain indices)
-            for idx in sorted(to_remove, reverse=True):
-                indices.pop(idx)
-        
-        # Return filtered matches
-        return [matches[i] for i in keep]
+        # Find contours
+        contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        return contours
     
+    def analyze_target_image(self, template_path):
+        """Analyze a target image to extract its color and shape characteristics.
+        
+        Args:
+            template_path: Path to the template image to analyze
+            
+        Returns:
+            Dictionary with color and shape information
+        """
+        try:
+            # Load the template
+            template = cv2.imread(template_path)
+            if template is None:
+                raise ValueError(f"Failed to load template: {template_path}")
+            
+            # Convert to different color spaces
+            template_hsv = cv2.cvtColor(template, cv2.COLOR_BGR2HSV)
+            template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+            
+            # Calculate average color
+            avg_bgr = np.mean(template, axis=(0, 1))
+            avg_hsv = np.mean(template_hsv, axis=(0, 1))
+            
+            # Extract color range
+            std_hsv = np.std(template_hsv, axis=(0, 1))
+            lower_hsv = np.array([max(0, avg_hsv[0] - 2*std_hsv[0]),
+                               max(0, avg_hsv[1] - 2*std_hsv[1]),
+                               max(0, avg_hsv[2] - 2*std_hsv[2])])
+            upper_hsv = np.array([min(179, avg_hsv[0] + 2*std_hsv[0]),
+                               min(255, avg_hsv[1] + 2*std_hsv[1]),
+                               min(255, avg_hsv[2] + 2*std_hsv[2])])
+            
+            # Extract shape features
+            contours = self._extract_contours(template_gray)
+            shape_features = {}
+            if contours:
+                main_contour = max(contours, key=cv2.contourArea)
+                # Calculate area, perimeter, circularity
+                area = cv2.contourArea(main_contour)
+                perimeter = cv2.arcLength(main_contour, True)
+                circularity = 4 * np.pi * area / (perimeter * perimeter) if perimeter > 0 else 0
+                
+                # Approximate shape
+                approx = cv2.approxPolyDP(main_contour, 0.04 * perimeter, True)
+                
+                # Determine shape type based on vertices count and circularity
+                if circularity > 0.8:
+                    shape_type = "circle"
+                elif len(approx) == 3:
+                    shape_type = "triangle"
+                elif len(approx) == 4:
+                    # Check if it's a square or rectangle
+                    x, y, w, h = cv2.boundingRect(approx)
+                    aspect_ratio = float(w) / h
+                    shape_type = "square" if 0.9 <= aspect_ratio <= 1.1 else "rectangle"
+                else:
+                    shape_type = "polygon"
+                
+                shape_features = {
+                    "type": shape_type,
+                    "vertices": len(approx),
+                    "area": area,
+                    "perimeter": perimeter,
+                    "circularity": circularity
+                }
+            
+            return {
+                "avg_color_bgr": tuple(avg_bgr),
+                "avg_color_hsv": tuple(avg_hsv),
+                "color_range_hsv": (tuple(lower_hsv), tuple(upper_hsv)),
+                "shape": shape_features
+            }
+            
+        except Exception as e:
+            logger.error(f"Target image analysis failed: {str(e)}")
+            raise
+            
     def _multi_scale_template_matching(self, screenshot_gray, template_gray, threshold, scale_range, scale_steps):
         """Perform template matching at multiple scales.
         
@@ -296,6 +426,63 @@ class Workspace(QObject):
             
         return matches
             
+    def _apply_non_max_suppression(self, matches: List[QRect], overlap_threshold: float = 0.3) -> List[QRect]:
+        """Apply non-maximum suppression to filter out overlapping matches.
+        
+        Args:
+            matches: List of QRect objects representing matches
+            overlap_threshold: Maximum allowed overlap ratio (0-1)
+            
+        Returns:
+            Filtered list of QRect objects
+        """
+        if not matches:
+            return []
+            
+        # Convert QRects to a format easier to work with
+        boxes = [(rect.x(), rect.y(), rect.x() + rect.width(), rect.y() + rect.height()) for rect in matches]
+        
+        # Calculate areas for each box
+        areas = [(x2 - x1) * (y2 - y1) for x1, y1, x2, y2 in boxes]
+        
+        # Sort by bottom-right y-coordinate
+        indices = list(range(len(boxes)))
+        indices.sort(key=lambda i: boxes[i][3], reverse=True)
+        
+        keep = []
+        while indices:
+            i = indices[0]
+            keep.append(i)
+            
+            to_remove = [0]  # Always remove the current index
+            x1_i, y1_i, x2_i, y2_i = boxes[i]
+            area_i = areas[i]
+            
+            # Check each remaining box
+            for j_idx, j in enumerate(indices[1:], 1):
+                x1_j, y1_j, x2_j, y2_j = boxes[j]
+                
+                # Calculate intersection
+                xx1 = max(x1_i, x1_j)
+                yy1 = max(y1_i, y1_j)
+                xx2 = min(x2_i, x2_j)
+                yy2 = min(y2_i, y2_j)
+                
+                # Check if there is an intersection
+                if xx2 > xx1 and yy2 > yy1:
+                    intersection = (xx2 - xx1) * (yy2 - yy1)
+                    overlap = intersection / min(area_i, areas[j])
+                    
+                    if overlap > overlap_threshold:
+                        to_remove.append(j_idx)
+            
+            # Remove boxes marked for removal (in reverse order to maintain indices)
+            for idx in sorted(to_remove, reverse=True):
+                indices.pop(idx)
+        
+        # Return filtered matches
+        return [matches[i] for i in keep]
+    
     def get_pixel_color(self, x: int, y: int) -> Tuple[int, int, int]:
         """Get the RGB color of a pixel at the specified coordinates.
         

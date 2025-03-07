@@ -87,8 +87,39 @@ Projects are saved in a custom `.gbb` file format, which is essentially a JSON f
 ### Enhancing Image Recognition
 
 1. Modify the `find_template` method in `workspace.py`
-2. Consider adding additional algorithms or parameters to improve recognition accuracy
-3. Update the UI in `image_recognition_panel.py` to expose new functionality
+   - Added color filtering capabilities to filter out regions that don't match the target's color profile
+   - Added shape matching to verify that detected regions match the target's shape characteristics
+   - Combined with multi-scale matching for more robust detection
+2. Added `analyze_target_image` method to automatically extract color and shape features from target images
+3. Update the UI in `image_recognition_panel.py` to expose new functionality:
+   - Added target analysis panel to examine target image properties
+   - Added color filtering controls with auto-detection capability
+   - Added shape matching controls to filter detected regions by shape similarity
+
+The improved image recognition system uses a multi-step approach:
+1. **Color filtering**: Filter the screenshot to focus only on regions with colors similar to the target
+2. **Template matching**: Apply standard template matching algorithms to find potential matches
+3. **Shape verification**: Verify matches by comparing their shape characteristics to the target
+4. **Non-maximum suppression**: Filter out overlapping matches to prevent duplicates
+
+This combination of techniques significantly improves detection accuracy while reducing false positives.
+
+### Enhanced UI Layout
+
+1. Improved the `ImageRecognitionPanel` UI with a cleaner layout:
+   - Organized controls into logical sections (basic settings vs. advanced features)
+   - Implemented collapsible sections for advanced features to reduce clutter
+   - Added scrollable content area to accommodate all settings without overwhelming the user
+   - Improved visual hierarchy and styling for better readability
+   - Enhanced user feedback with better status indicators and result displays
+
+2. UI organization principles:
+   - Essential controls are always visible (image selection, basic settings)
+   - Advanced features are hidden by default but easily accessible
+   - Related controls are grouped together (color filtering, shape matching, multi-scale matching)
+   - Consistent spacing, alignment, and sizing for better visual appeal
+
+This improved layout makes the application more approachable for new users while still providing access to all advanced features when needed.
 
 ### Adding New UI Features
 
