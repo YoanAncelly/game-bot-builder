@@ -1,0 +1,16 @@
+{
+  "name": "New Project",
+  "description": "",
+  "created_at": "2025-03-07T14:06:38.540646",
+  "modified_at": "2025-03-07T14:11:51.724828",
+  "version": "1.0.0",
+  "workspace": "{\"py/object\": \"src.modules.workspace.Workspace\", \"capture_taken\": {\"py/object\": \"PySide6.QtCore.SignalInstance\"}, \"template_matched\": {\"py/object\": \"PySide6.QtCore.SignalInstance\"}, \"destroyed\": {\"py/object\": \"PySide6.QtCore.SignalInstance\"}, \"objectNameChanged\": {\"py/object\": \"PySide6.QtCore.SignalInstance\"}, \"capture_directory\": \"captures\"}",
+  "workflows": "[{\"py/object\": \"src.modules.workflow.Workflow\", \"destroyed\": {\"py/object\": \"PySide6.QtCore.SignalInstance\"}, \"objectNameChanged\": {\"py/object\": \"PySide6.QtCore.SignalInstance\"}, \"id\": \"737e5059-78d8-42f2-8895-9dd865921e69\", \"name\": \"Main Workflow\", \"description\": \"\", \"actions\": {\"73f5df3a-41e5-4d71-8660-ef21361c7c52\": {\"py/object\": \"src.modules.workflow.Action\", \"id\": \"73f5df3a-41e5-4d71-8660-ef21361c7c52\", \"type\": {\"py/reduce\": [{\"py/function\": \"builtins.getattr\"}, {\"py/tuple\": [{\"py/type\": \"src.modules.workflow.ActionType\"}, \"FIND_IMAGE\"]}]}, \"name\": \"find target\", \"description\": \"\", \"parameters\": {\"image_id\": \"1c41cbf8-3532-49f2-a057-276c01065d47\", \"threshold\": 0.8}, \"next_action_id\": \"b0adec52-04be-4c29-8ad9-cb0f014dab16\", \"condition_true_id\": null, \"condition_false_id\": null, \"enabled\": true}, \"b0adec52-04be-4c29-8ad9-cb0f014dab16\": {\"py/object\": \"src.modules.workflow.Action\", \"id\": \"b0adec52-04be-4c29-8ad9-cb0f014dab16\", \"type\": {\"py/reduce\": [{\"py/function\": \"builtins.getattr\"}, {\"py/tuple\": [{\"py/type\": \"src.modules.workflow.ActionType\"}, \"MOVE_MOUSE\"]}]}, \"name\": \"move mouse to target\", \"description\": \"\", \"parameters\": {\"x\": 1000, \"y\": 0, \"duration\": 0.2}, \"next_action_id\": \"60400183-c149-4939-be0b-f3fe9e5ecfc6\", \"condition_true_id\": null, \"condition_false_id\": null, \"enabled\": true}, \"60400183-c149-4939-be0b-f3fe9e5ecfc6\": {\"py/object\": \"src.modules.workflow.Action\", \"id\": \"60400183-c149-4939-be0b-f3fe9e5ecfc6\", \"type\": {\"py/reduce\": [{\"py/function\": \"builtins.getattr\"}, {\"py/tuple\": [{\"py/type\": \"src.modules.workflow.ActionType\"}, \"CLICK\"]}]}, \"name\": \"Click on target\", \"description\": \"\", \"parameters\": {\"button\": \"left\", \"x\": 0, \"y\": 0}, \"next_action_id\": null, \"condition_true_id\": null, \"condition_false_id\": null, \"enabled\": true}}, \"start_action_id\": \"73f5df3a-41e5-4d71-8660-ef21361c7c52\", \"is_running\": false, \"executor\": null, \"__METAOBJECT__\": {\"py/object\": \"builtins.PyCapsule\"}}]",
+  "images": {
+    "1c41cbf8-3532-49f2-a057-276c01065d47": {
+      "path": "C:/Users/Yoan Ancelly/Pictures/Screenshots/Screenshot 2025-03-07 120803.png",
+      "description": "Screenshot 2025-03-07 120803.png"
+    }
+  },
+  "settings": {}
+}

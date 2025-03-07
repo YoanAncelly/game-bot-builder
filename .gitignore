@@ -3,3 +3,4 @@ logs
 *.gbb
 **_pycache_**
 **venv**
+!examples/*
